@@ -50,7 +50,10 @@ namespace PlatFormer
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            player.Load(Content); // call the ;Load' function in the player class
+            player.Load(Content, this); // call the ;Load' function in the player class
+            // 'this' basically mean "pass all information in our class through as a variable"
+
+
 
             BoxingViewportAdapter viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
             camera = new Camera2D(viewportAdapter);
@@ -59,6 +62,7 @@ namespace PlatFormer
             map = Content.Load<TiledMap>("Level1");
             mapRenderer = new TiledMapRenderer(GraphicsDevice);
         }
+
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
@@ -81,6 +85,7 @@ namespace PlatFormer
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             player.Update(deltaTime); // Call the 'Update' from our Player class
+            camera.Position = player.playerSprite.position - new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
 
             // TODO: Add your update logic here
 
@@ -99,7 +104,10 @@ namespace PlatFormer
             var viewMatrix = camera.GetViewMatrix();
             var projectMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0.0f, - 1.0f);
             // Begin Drawing
-            spriteBatch.Begin();
+            spriteBatch.Begin(transformMatrix: viewMatrix);
+
+
+            mapRenderer.Draw(map, ref viewMatrix, ref projectMatrix);
             // call the 'Draw' function from our Player class
             player.Draw(spriteBatch);
             //Finish drawing
