@@ -1,2 +1,2 @@
 # Platformer
-A mono
+A monogame game
