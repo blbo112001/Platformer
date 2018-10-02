@@ -1,6 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Tiled;
+using MonoGame.Extended.Tiled.Graphics;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace PlatFormer
 {
@@ -13,6 +17,10 @@ namespace PlatFormer
         SpriteBatch spriteBatch;
 
         Player player = new Player(); //Create and instance of our player class
+
+        Camera2D camera = null;// Creates an instance of a 2D Camera
+        TiledMap map = null; // Creates an instance of a Tiled map
+        TiledMapRenderer mapRenderer = null;   // creates an instance of what makes a Tiled map
 
         public Game1()
         {
@@ -44,7 +52,12 @@ namespace PlatFormer
 
             player.Load(Content); // call the ;Load' function in the player class
 
-            // TODO: use this.Content to load your game content here
+            BoxingViewportAdapter viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
+            camera = new Camera2D(viewportAdapter);
+            camera.Position = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
+
+            map = Content.Load<TiledMap>("Level1");
+            mapRenderer = new TiledMapRenderer(GraphicsDevice);
         }
 
         /// <summary>
@@ -82,6 +95,9 @@ namespace PlatFormer
         {
             // clears anything previously drawn to the screen
             GraphicsDevice.Clear(Color.Gray);
+
+            var viewMatrix = camera.GetViewMatrix();
+            var projectMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0.0f, - 1.0f);
             // Begin Drawing
             spriteBatch.Begin();
             // call the 'Draw' function from our Player class
