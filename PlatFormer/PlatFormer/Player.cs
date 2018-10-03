@@ -52,17 +52,20 @@ namespace PlatFormer
                 localAcceleration.Y = runSpeed;
             }
 
-            foreach (Sprite tile in game.allCollisionTiles)
-            {
-                if (collision.IsColliding(playerSprite, tile) == true)
-                {
-                    int testVariable = 0;
-                }
-            }
+            //foreach (Sprite tile in game.allCollisionTiles)
+            //{
+            //    if (collision.IsColliding(playerSprite, tile) == true)
+            //    {
+            //        int testVariable = 0;
+            //    }
+            //}
 
 
             playerSprite.velocity = localAcceleration * deltaTime;
             playerSprite.position += playerSprite.velocity * deltaTime;
+
+            collision.game = game;
+            playerSprite = collision.CollideWithPlatforms(playerSprite, deltaTime);
         }
 
 
