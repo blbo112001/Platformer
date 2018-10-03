@@ -97,6 +97,62 @@ namespace PlatFormer
             return hero;
         }
 
+
+        Sprite CollideBottomDiagonals(Sprite hero, Vector2 TileIndex, Sprite playerPrediction)
+        {
+            Sprite tile = game.levelGrid[(int)TileIndex.X, (int)TileIndex.Y];
+            int leftEdgeDistance = Math.Abs(tile.leftEdge - playerPrediction.rightEdge);
+            int rightEdgeDistance = Math.Abs(tile.rightEdge - playerPrediction.leftEdge);
+            int topEdgeDistance = Math.Abs(tile.topEdge - playerPrediction.topEdge);
+
+            if (IsColliding(playerPrediction, tile) == true)
+            {
+                if (topEdgeDistance < rightEdgeDistance && topEdgeDistance < leftEdgeDistance)
+                {
+                    // If the top edge is closest, collision is happening to above the platform
+                    hero.position.Y = tile.topEdge - hero.height + hero.offset.Y;
+                    hero.velocity.Y = 0;
+                }
+                else if (rightEdgeDistance < leftEdgeDistance)
+                {
+                    // If the right edge is closest, collision is happening to the right side of the platform
+                    hero.position.X = tile.rightEdge + hero.offset.X;
+                    hero.velocity.Y = 0;
+                }
+                else
+                {
+                    // else if the left edge is closest, the collision is happening to the left of the platform
+                    hero.position.X = tile.leftEdge - hero.width + hero.offset.X;
+                    hero.velocity.X = 0;
+                }
+            }
+            return hero;
+        }
+
+        Sprite CollideAboveDiagonals(Sprite hero, Vector2 tileIndex, Sprite playerPrediction)
+        {
+            Sprite tile = game.levelGrid[(int)tileIndex.X, (int)tileIndex.Y];
+            int leftEdgeDistance = Math.Abs(tile.rightEdge - playerPrediction.leftEdge);
+            int rightEdgeDistance = Math.Abs(tile.leftEdge - playerPrediction.rightEdge);
+            int bottomEdgeDistance = Math.Abs(tile.bottomEdge - playerPrediction.bottomEdge);
+            if (IsColliding(playerPrediction, tile) == true)
+            {
+                hero.position.Y = tile.bottomEdge + hero.offset.Y;
+                hero.velocity.Y = 0;
+            }
+            else if (leftEdgeDistance < rightEdgeDistance)
+            {
+                hero.position.X = tile.rightEdge + hero.offset.X;
+                hero.velocity.X = 0;
+            }
+            else
+            {
+                hero.position.X = tile.leftEdge - hero.width + hero.offset.X;
+                hero.velocity.X = 0;
+            }
+            return hero;
+        }
+
         public Sprite CollideWithPlatforms(Sprite hero, float deltaTime)
         {
             // create a copy of the hero that will move to where the hero will be in the next frame.
@@ -146,7 +202,7 @@ namespace PlatFormer
             }
             if (bottomCheck == true)
             {
-                hero = CollideBelow(hero, bottomTile, playerPrediction);
+                hero = collideBelow(hero, bottomTile, playerPrediction);
             }
             if (topCheck == true)
             {
