@@ -5,6 +5,7 @@ using MonoGame.Extended;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Graphics;
 using MonoGame.Extended.ViewportAdapters;
+using System.Collections;
 
 namespace PlatFormer
 {
@@ -22,9 +23,24 @@ namespace PlatFormer
         TiledMap map = null; // Creates an instance of a Tiled map
         TiledMapRenderer mapRenderer = null;   // creates an instance of what makes a Tiled map
 
+        TiledMapTileLayer collisionLayer;
+        public ArrayList allCollisionTiles = new ArrayList();
+        public Sprite[,] levelGrid;
+
+        public int tileHeight = 0;
+        public int levelTileWidth = 0;
+        public int LevelTileHeight = 0;
+
+        public Rectangle myMap;
+
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            
+            graphics.PreferredBackBufferWidth = 1600;
+            graphics.PreferredBackBufferHeight = 900;
+
             Content.RootDirectory = "Content";
         }
 
@@ -36,6 +52,11 @@ namespace PlatFormer
         /// </summary>
         protected override void Initialize()
         {
+
+            myMap.X = 0;
+            myMap.Y = 0;
+            myMap.Width = 2800;
+            myMap.Height = 3500;
             // TODO: Add your initialization logic here
 
             base.Initialize();
@@ -61,9 +82,55 @@ namespace PlatFormer
 
             map = Content.Load<TiledMap>("Level1");
             mapRenderer = new TiledMapRenderer(GraphicsDevice);
+
+            SetUpTiles();
         }
 
 
+
+        public void SetUpTiles()
+        {
+            tileHeight = map.TileHeight;
+            LevelTileHeight = map.Height;
+            levelTileWidth = map.Width;
+            levelGrid = new Sprite[levelTileWidth, LevelTileHeight];
+            foreach (TiledMapTileLayer layer in map.TileLayers)
+            {
+                if (layer.Name == "Collision")
+                {
+                    collisionLayer = layer;
+                }
+            }
+
+            int columns = 0;
+            int rows = 0;
+            int loopCount = 0;
+            while (loopCount<collisionLayer.Tiles.Count)
+            {
+                if (collisionLayer.Tiles[loopCount].GlobalIdentifier != 0)
+                {
+                    Sprite tileSprite = new Sprite();
+                    tileSprite.position.X = columns * tileHeight;
+                    tileSprite.position.Y = rows * tileHeight;
+                    tileSprite.width = tileHeight;
+                    tileSprite.height = tileHeight;
+                    tileSprite.UpdateHitBox();
+                    allCollisionTiles.Add(tileSprite);
+                    levelGrid[columns, rows] = tileSprite;
+
+                }
+
+                columns++;
+
+                if (columns == levelTileWidth)
+                {
+                    columns = 0;
+                    rows++;
+                }
+                loopCount++;
+            }
+
+        }
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// game-specific content.
@@ -85,6 +152,7 @@ namespace PlatFormer
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             player.Update(deltaTime); // Call the 'Update' from our Player class
+
             camera.Position = player.playerSprite.position - new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
 
             // TODO: Add your update logic here

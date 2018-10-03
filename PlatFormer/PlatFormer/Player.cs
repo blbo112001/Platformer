@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -14,6 +15,9 @@ namespace PlatFormer
        public Sprite playerSprite = new Sprite();
 
         Game1 game = null;
+        float runSpeed = 15000;
+
+        Collision collision = new Collision();
 
         public Player()
         {
@@ -22,13 +26,53 @@ namespace PlatFormer
 
         public void Load(ContentManager content, Game1 theGame)
         {
-            playerSprite.Load(content, "hero");
+            playerSprite.Load(content, "hero", true);
             game = theGame; // we are now able to access the information stored in the 'Game1' class
+            playerSprite.velocity = Vector2.Zero;
+            playerSprite.position = new Vector2(2885, 3500);/*2 , 99*/
         }
+
+        private void UpdateInput(float deltaTime)
+        {
+            Vector2 localAcceleration = new Vector2(0 ,0);
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)== true || Keyboard.GetState().IsKeyDown(Keys.A) == true)
+            {
+                localAcceleration.X = -runSpeed;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right) == true || Keyboard.GetState().IsKeyDown(Keys.D) == true)
+            {
+                localAcceleration.X = runSpeed;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) == true || Keyboard.GetState().IsKeyDown(Keys.W) == true)
+            {
+                localAcceleration.Y = -runSpeed;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down) == true || Keyboard.GetState().IsKeyDown(Keys.S) == true)
+            {
+                localAcceleration.Y = runSpeed;
+            }
+
+            foreach (Sprite tile in game.allCollisionTiles)
+            {
+                if (collision.IsColliding(playerSprite, tile) == true)
+                {
+                    int testVariable = 0;
+                }
+            }
+
+
+            playerSprite.velocity = localAcceleration * deltaTime;
+            playerSprite.position += playerSprite.velocity * deltaTime;
+        }
+
+
         public void Update(float deltaTime)
         {
+            UpdateInput(deltaTime);
             playerSprite.Update(deltaTime);
-        }public void Draw(SpriteBatch spriteBatch)
+            playerSprite.UpdateHitBox();
+        }
+        public void Draw(SpriteBatch spriteBatch)
         {
             playerSprite.Draw(spriteBatch);
         }
