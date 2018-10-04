@@ -27,9 +27,10 @@ namespace PlatFormer
         public void Load(ContentManager content, Game1 theGame)
         {
             playerSprite.Load(content, "hero", true);
+            playerSprite.offset = new Vector2(24, 24);
             game = theGame; // we are now able to access the information stored in the 'Game1' class
             playerSprite.velocity = Vector2.Zero;
-            playerSprite.position = new Vector2(2885, 3500);/*2 , 99*/
+            playerSprite.position = new Vector2(2885, 3700);/*2 , 99*/
         }
 
         private void UpdateInput(float deltaTime)

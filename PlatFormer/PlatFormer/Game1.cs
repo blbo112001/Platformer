@@ -56,7 +56,7 @@ namespace PlatFormer
             myMap.X = 0;
             myMap.Y = 0;
             myMap.Width = 2800;
-            myMap.Height = 3500;
+            myMap.Height = 3550;
             // TODO: Add your initialization logic here
 
             base.Initialize();

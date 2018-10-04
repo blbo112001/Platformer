@@ -68,6 +68,7 @@ namespace PlatFormer
             {
                 hero.position.X = tile.leftEdge - hero.width + hero.offset.X;
                 hero.velocity.X = 0;
+
             }
 
             return hero;
@@ -103,7 +104,7 @@ namespace PlatFormer
             Sprite tile = game.levelGrid[(int)TileIndex.X, (int)TileIndex.Y];
             int leftEdgeDistance = Math.Abs(tile.leftEdge - playerPrediction.rightEdge);
             int rightEdgeDistance = Math.Abs(tile.rightEdge - playerPrediction.leftEdge);
-            int topEdgeDistance = Math.Abs(tile.topEdge - playerPrediction.topEdge);
+            int topEdgeDistance = Math.Abs(tile.topEdge - playerPrediction.bottomEdge);
 
             if (IsColliding(playerPrediction, tile) == true)
             {
@@ -189,7 +190,7 @@ namespace PlatFormer
             bool bottomLeftCheck = CheckForTile(bottomLeftTile);
             bool bottomRIghtCheck = CheckForTile(bottomRightTile);
             bool topLeftCheck = CheckForTile(topLeftTile);
-            bool topRIghtCheck = CheckForTile(topRightTile);
+            bool topRightCheck = CheckForTile(topRightTile);
 
             if (leftCheck == true) // Check for collisions with the tiles left of the player
             {
@@ -207,6 +208,34 @@ namespace PlatFormer
             if (topCheck == true)
             {
                 hero = CollideAbove(hero, topTile, playerPrediction);
+            }
+
+            // Check for collisisons with the tiles below and to the left of the player...
+            if (leftCheck == false && bottomCheck == false && bottomLeftCheck == true)
+            {
+                //... then properly check for the diagonals.
+                hero = CollideBottomDiagonals(hero, bottomLeftTile, playerPrediction);
+            }
+
+            // Check for collisions with the tiles below and to the right of the player...
+            if (rightCheck == false && bottomCheck == false && bottomRIghtCheck == true)
+            {
+                //...then properly check for the diagonals.
+                hero = CollideBottomDiagonals(hero, bottomRightTile, playerPrediction);
+            }
+
+            // Check for collisions with the tiles above and to the left of the player...
+            if (leftCheck == false && bottomCheck == false && topLeftCheck);
+            {
+                //... then properly check the diagonals
+                hero = CollideBottomDiagonals(hero, topLeftTile, playerPrediction);
+            }
+
+            // Check for collisisons with the tiles above and to the right of the player...
+            if (rightCheck == false && topCheck == false && topRightCheck)
+            {
+                //...
+                hero = CollideAboveDiagonals(hero, topRightTile, playerPrediction);
             }
             return hero;
         }
